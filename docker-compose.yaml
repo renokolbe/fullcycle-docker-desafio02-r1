@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+
+  nodeapp:
+    build:
+      context: node
+    container_name: app
+    image: renokolbe/docker-desafio02-node:prod
+    tty: true
+    volumes:
+      - ./node:/usr/src/app/
+    networks:
+      - node2-network
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.7
+    command: --innodb-use-native-aio=0
+    container_name: dbnode
+    restart: always
+    tty: true
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=nodedb
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=roor
+    networks:
+      - node2-network
+
+  nginx:
+    restart: always
+    build:
+      context: nginx
+      dockerfile: Dockerfile.prod
+    image: renokolbe/docker-desafio02-nginx-node:prod
+    container_name: nginx
+    networks:
+      - node2-network
+    ports:
+      - "8080:80"
+    depends_on:
+      - nodeapp
+
+networks:
+  node2-network:
+    driver: bridge
