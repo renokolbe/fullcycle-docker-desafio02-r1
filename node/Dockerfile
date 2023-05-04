@@ -1,25 +1,30 @@
-FROM node:15
+FROM node:16
 
-WORKDIR /usr/src/app/
-
-RUN npm install express --save
-RUN npm install mysql --save
+## Nao ha necessidade de se fazer a instalacao dentro do repositorio
+##RUN npm install express --save
+##RUN npm install mysql --save
 
 ## Debian 9/stretch moved to archive.debian.org https://unix.stackexchange.com/questions/743839/apt-get-update-failed-to-fetch-debian-amd64-packages-while-building-dockerfile-f
 ## Forca o Repositorio
 RUN echo "deb http://archive.debian.org/debian stretch main" > /etc/apt/sources.list
 
-## Instala o Dockerize
-RUN apt-get update && apt-get install -y wget
+## Instala o Wait for It
+RUN apt update && \
+    apt install -y wget netcat && \
+    wget -q -O /usr/bin/wait-for https://raw.githubusercontent.com/eficode/wait-for/v2.2.3/wait-for && \
+    chmod +x /usr/bin/wait-for
 
-ENV DOCKERIZE_VERSION v0.6.1
-RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-    && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+WORKDIR /usr/src/app/
 
 COPY . . 
+RUN chmod +x inicia_servico.sh
 
+## Não há nececssidade de expor a Porta
 ## Conexoes na Porta 3000
-EXPOSE 3000
+##EXPOSE 3000
 
-CMD ["node", "index.js"]
+## Define o usuario NODE como padrão
+USER node
+
+## Não há ncessidade de executar o comando, pois usaremos o entry-point no compose
+## CMD ["node", "index.js"]

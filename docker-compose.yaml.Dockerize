@@ -9,7 +9,8 @@ services:
     ## Pode-se concatenar os arquivos / programas que deverao ser executados (no caso npm install e depois node index.js)
     ## entrypoint: dockerize -wait tcp://db:3306 -timeout 30s npm install node index.js
     ## Pode-se usar um arquivo .sh por exemplo com todos os comandos que devem ser executados
-    entrypoint: wait-for db:3306 -t 40 -- ./inicia_servico.sh
+    ##entrypoint: dockerize -wait tcp://db:3306 -timeout 30s inicia_servico.sh
+    ##entrypoint: inicia_servico.sh
     tty: true
     volumes:
       - ./node:/usr/src/app/
